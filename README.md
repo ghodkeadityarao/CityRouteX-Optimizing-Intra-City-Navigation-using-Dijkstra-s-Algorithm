@@ -1,4 +1,4 @@
-# CityRouteX-Optimizing-Intra-City-Navigation-using-Dijkstra-s-Algorithm
+# CityRouteX - Optimizing Intra City Navigation using Dijkstra Algorithm
 Welcome to CityRouteX, a project dedicated to exploring data-driven intra-city navigation using Dijkstra's Algorithm. 
 
 Description:
@@ -27,5 +27,11 @@ Just scroll down the page and you will find the shortest and the efficient route
 How to Use:
 1. Clone this repository: git clone command
 2. Navigate to specific directories of interest.
-3. Use provided datasets, run simulations, explore case studies, or refer to the documentation for comprehensive understanding and application.
+3. Set Up a Virtual Environment (optional but recommended): python -m venv venv
+4. Activate the Virtual Environment:
+   For Windows: venv\Scripts\activate
+   For macOS and Linux: source venv/bin/activate
+5. Install Dependencies: pip install -r requirements.txt
+6. Run the Flask Application: flask run
+7. Access the Application: Open a web browser and go to http://127.0.0.1:5000/ or http://localhost:5000/ to interact with the Flask application.
 
