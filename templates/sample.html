@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Railway Track Display with Text</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #e0e0e0; /* Background color */
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 50px auto; /* Center the containers */
+      padding: 20px;
+      width: 80%; /* Adjust the width of the containers */
+      background-color: #f0f0f0; /* Container background color */
+    }
+
+    .railway-track {
+      width: 40%; /* Adjust the width of the railway container */
+      font-family: monospace; /* Use a monospace font for consistent character width */
+      font-size: 24px; /* Adjust font size for character spacing */
+      white-space: pre; /* Preserve whitespace for the characters */
+      background-color: #a9a9a9; /* Rail track color */
+      line-height: 1; /* Remove default line-height */
+    }
+
+    .text-container {
+      width: 50%; /* Adjust the width of the text container */
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="text-container">
+      <p>This is some text in the adjacent container next to the railway track. You can place any text or content here.</p>
+    </div>
+    <div class="railway-track">
+      =======
+      =     =
+      =     =
+      =======
+    </div>
+    
+    <div class="text-container">
+      <p>This is some text in the adjacent container next to the railway track. You can place any text or content here.</p>
+    </div>
+  </div>
+
+</body>
+</html>
