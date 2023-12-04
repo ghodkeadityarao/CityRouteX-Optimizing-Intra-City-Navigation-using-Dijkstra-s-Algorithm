@@ -4,6 +4,9 @@ Welcome to CityRouteX, a project dedicated to exploring data-driven intra-city n
 Description:
 CityRouteX is a comprehensive exploration and implementation of Dijkstra's Algorithm for optimizing intra-city navigation. This repository contains the codebase, datasets, simulations, and case studies utilized in the research project. The project aims to enhance urban mobility by identifying the shortest and fastest routes within a city, addressing complex urban dynamics, transportation management, and urban design.
 
+Problem Statement:
+The optimization of intra-city navigation using data-driven techniques and Dijkstra's Algorithm is the issue that this research study attempts to answer. Moving efficiently within cities has become a crucial task as urban surroundings become more complicated. By examining how Dijkstra's Algorithm, a well-known graph theory idea, can be used in conjunction with urban mobility data to provide the shortest and fastest routes between city places, this research seeks to close this gap. The difficulty is in keeping the algorithm's efficacy while modifying it to handle dynamic urban conditions. The project aims to address this issue and provide novel solutions that reconfigure intra-city navigation, resulting in better traveler experiences and increased urban mobility.
+
 This repository contains:
 1. Codebase: Python implementation of Dijkstra's Algorithm for route optimization within urban environments.
 2. Datasets: Hand-curated datasets used for simulations and analysis, including transit networks, station details, and urban mobility data.
