@@ -12,6 +12,8 @@ What is measured
   4. Speed: original O(V^2) Dijkstra, heap Dijkstra and A* on the same graph and the same queries.
   5. Fastest versus fewest-transfers routes over every pair of stations.
   6. Sensitivity: how many routes change when the travel-time assumptions change.
+  7. Fares: how they spread over the network, what the Airport Express adds, and how often a
+     fare would change if the modelled distances were a few percent off.
 """
 import itertools
 import json
@@ -326,6 +328,31 @@ def sensitivity(planner):
     return df
 
 
+# --- 7. fares ---------------------------------------------------------------------------------
+
+def fares_summary(planner):
+    f, names = planner.fares, [s.name for s in planner.network.stations]
+    rows = []
+    for a, b in all_pairs(planner):
+        route = planner.plan(names[a], names[b])
+        km = f.distance_km(a, b)                       # None when an end is only on the Airport Express
+        rows.append({"fare": route.fare.total, "km": km, "airport": any(l.line == "Airport Express Line" for l in route.legs),
+                     "ordinary_fare": None if km is None else f.slab(km, "mon_to_sat")})
+    df = pd.DataFrame(rows)
+    both = df[df.km.notna()]
+    airport = both[both.airport]
+    unchanged = {}
+    for change in (0.95, 1.05, 0.9, 1.1):
+        same = sum(f.slab(k * change, "mon_to_sat") == f.slab(k, "mon_to_sat") for k in both.km)
+        unchanged[f"{int(round((change - 1) * 100)):+d}%"] = pct(same, len(both))
+    return {"pairs": len(df), "mean_fare_rupees": round_(df.fare.mean(), 1),
+            "share_of_pairs_at_each_fare_pct": {int(k): pct(v, len(df)) for k, v in df.fare.value_counts().sort_index().items()},
+            "pairs_where_the_fastest_route_uses_the_airport_express_pct": pct(df.airport.sum(), len(df)),
+            "of_those_with_an_ordinary_route_mean_extra_rupees": round_((airport.fare - airport.ordinary_fare).mean(), 1),
+            "of_those_pairs_that_pay_more_than_the_ordinary_fare_pct": pct((airport.fare > airport.ordinary_fare).sum(), max(len(airport), 1)),
+            "fare_unchanged_if_distances_are_off_by": unchanged}
+
+
 # --- output -----------------------------------------------------------------------------------
 
 def figure(comparison, sens):
@@ -364,6 +391,8 @@ def main():
     print("speed", out["speed"])
     out["fastest_vs_fewest_transfers"] = mode_tradeoff(planner)
     print("modes", out["fastest_vs_fewest_transfers"])
+    out["fares"] = fares_summary(planner)
+    print("fares", out["fares"])
     sens = sensitivity(planner)
     print(sens.to_string(index=False))
     figure(comparison, sens)

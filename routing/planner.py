@@ -1,6 +1,7 @@
 """Turn a search result into a route a person can follow: legs by line, stops, minutes, transfers."""
 from dataclasses import dataclass, field
 
+from .fares import DAYS, Fares
 from .network import Graph, Network
 from .search import astar, dijkstra
 
@@ -34,6 +35,7 @@ class Route:
     legs: list = field(default_factory=list)
     settled: int = 0                    # nodes the search finished (work done)
     transfer_minutes: float = 0.0       # waiting and walking at line changes
+    fare: object = None                 # routing.fares.Fare, or None if it cannot be priced
 
     @property
     def minutes(self):
@@ -65,6 +67,8 @@ class Route:
         return {"origin": self.origin, "destination": self.destination, "mode": self.mode,
                 "minutes": round(self.minutes), "km": round(self.km, 1), "stops": self.stops,
                 "transfers": self.transfers, "transfer_minutes": round(self.transfer_minutes),
+                "fare_rupees": self.fare.total if self.fare else None,
+                "fare_parts": self.fare.parts if self.fare else [],
                 "legs": [{"line": l.line, "colour": l.colour, "stations": l.stations, "coords": l.coords,
                           "minutes": round(l.minutes), "stops": l.stops, "km": round(l.km, 1)} for l in self.legs]}
 
@@ -74,6 +78,7 @@ class Planner:
         self.network = network or Network.load()
         self.graph = Graph(self.network, params) if params else Graph(self.network)
         self.algorithm = algorithm
+        self.fares = Fares(self.network, self.graph.params.circuity)
 
     def station_id(self, name):
         sid = self.network.find(name)
@@ -91,7 +96,9 @@ class Planner:
             return astar(g, g.at_station[a], g.at_station[b], b, cost)
         return dijkstra(g, g.at_station[a], g.at_station[b], cost)
 
-    def plan(self, origin, destination, mode="fastest"):
+    def plan(self, origin, destination, mode="fastest", day="mon_to_sat"):
+        if day not in DAYS:
+            raise RouteError(f"Unknown day type '{day}'. Choose one of: {', '.join(DAYS)}.")
         a, b = self.station_id(origin), self.station_id(destination)
         if a == b:
             raise RouteError("Pick two different stations.")
@@ -103,6 +110,7 @@ class Planner:
         if not route.legs:
             raise RouteError(f"{route.origin} and {route.destination} are joined by a walkway, not a train "
                              f"(about {route.transfer_minutes:.0f} minutes on foot).")
+        route.fare = self.fares.for_route(route, day)
         return route
 
     def _route(self, path, mode, settled):

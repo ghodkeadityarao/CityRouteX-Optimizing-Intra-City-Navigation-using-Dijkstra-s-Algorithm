@@ -1,0 +1,8 @@
+station,New Delhi,Shivaji Stadium,Dhaula Kuan,Delhi Aerocity,IGI Airport,Dwarka Sector 21,Yashobhoomi Dwarka Sector 25
+New Delhi,11,21,43,54,64,64,75
+Shivaji Stadium,21,11,21,32,54,64,75
+Dhaula Kuan,43,21,11,21,32,54,64
+Delhi Aerocity,54,32,21,11,21,32,43
+IGI Airport,64,54,32,21,11,21,32
+Dwarka Sector 21,64,64,54,32,21,11,21
+Yashobhoomi Dwarka Sector 25,75,75,64,43,32,21,11

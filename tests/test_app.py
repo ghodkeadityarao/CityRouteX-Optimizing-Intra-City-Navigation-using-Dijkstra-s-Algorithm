@@ -48,3 +48,11 @@ def test_requests_do_not_share_state(client):
 def test_a_walk_between_stations_is_shown_as_a_walk(client):
     html = client.get("/?from=Delhi+Aerocity&to=Naraina+Vihar").get_data(as_text=True)
     assert "Walk from Dhaula Kuan to Durgabai Deshmukh South Campus" in html
+
+
+def test_the_page_and_api_show_the_fare_and_take_the_day_type(client):
+    html = client.get("/?from=Rithala&to=Huda+City+Centre").get_data(as_text=True)
+    assert "₹64" in html
+    sunday = client.get("/api/route?from=Rithala&to=Huda+City+Centre&day=sunday_and_holidays").get_json()
+    assert sunday["fare_rupees"] == 54
+    assert client.get("/api/route?from=Rithala&to=Hauz+Khas&day=never").status_code == 400

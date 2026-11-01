@@ -4,6 +4,7 @@
 """
 from flask import Flask, jsonify, render_template, request
 
+from routing.fares import DAYS
 from routing.planner import MODES, Planner, RouteError
 
 MODE_LABELS = {"fastest": "Fastest", "fewest_transfers": "Fewest transfers"}
@@ -17,10 +18,10 @@ def create_app(planner=None):
 
     def solve(args):
         origin, destination = (args.get("from") or "").strip(), (args.get("to") or "").strip()
-        mode = args.get("mode") or "fastest"
+        mode, day = args.get("mode") or "fastest", args.get("day") or "mon_to_sat"
         if not origin or not destination:
             return None
-        return planner.plan(origin, destination, mode)
+        return planner.plan(origin, destination, mode, day)
 
     @app.get("/")
     def index():
@@ -29,7 +30,7 @@ def create_app(planner=None):
             route = solve(request.args)
         except RouteError as e:
             error = str(e)
-        return render_template("index.html", stations=station_names, modes=MODE_LABELS, route=route,
+        return render_template("index.html", stations=station_names, modes=MODE_LABELS, days=DAYS, route=route,
                                error=error, form=request.args, lines=network.colours,
                                drawing=network_drawing(network))
 

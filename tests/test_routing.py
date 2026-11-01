@@ -139,3 +139,39 @@ def test_a_walkway_between_two_stations_counts_as_a_transfer_with_walking_time(p
 def test_two_stations_joined_only_by_a_walkway_say_so(planner):
     with pytest.raises(RouteError, match="walkway"):
         planner.plan("Dhaula Kuan", "Durgabai Deshmukh South Campus")
+
+
+def test_fare_slabs_follow_the_dmrc_table_at_every_boundary(planner):
+    f = planner.fares
+    assert [f.slab(km, "mon_to_sat") for km in (0.5, 2, 2.01, 5, 5.01, 12, 12.01, 21, 21.01, 32, 32.01, 80)] == \
+        [11, 11, 21, 21, 32, 32, 43, 43, 54, 54, 64, 64]
+    assert [f.slab(km, "sunday_and_holidays") for km in (2, 5, 12, 21, 32, 40)] == [11, 11, 21, 32, 43, 54]
+
+
+def test_airport_express_table_is_symmetric_and_has_every_pair(planner):
+    t = planner.fares.airport
+    assert len(t) == 49 and all(t[(a, b)] == t[(b, a)] for a, b in t)
+    assert t[(planner.station_id("New Delhi"), planner.station_id("IGI Airport"))] == 64
+
+
+def test_fare_depends_on_the_stations_not_on_the_route_mode(planner):
+    for a, b in [("Rithala", "Hauz Khas"), ("Vaishali", "Saket"), ("Noida City Centre", "Kashmere Gate")]:
+        assert planner.plan(a, b, "fastest").fare.total == planner.plan(a, b, "fewest_transfers").fare.total
+        assert planner.plan(a, b).fare.total == planner.plan(b, a).fare.total
+
+
+def test_long_journey_costs_the_top_slab_and_sunday_is_one_slab_cheaper(planner):
+    assert planner.plan("Rithala", "Huda City Centre").fare.total == 64
+    assert planner.plan("Rithala", "Huda City Centre", day="sunday_and_holidays").fare.total == 54
+
+
+def test_a_journey_using_the_airport_express_is_priced_as_separate_tickets(planner):
+    r = planner.plan("Delhi Aerocity", "Naraina Vihar")
+    assert [p["rupees"] for p in r.fare.parts] == [21, 32] and r.fare.total == 53
+    direct = planner.plan("New Delhi", "IGI Airport")
+    assert direct.fare.total == 64 and len(direct.fare.parts) == 1
+
+
+def test_an_unknown_day_type_is_rejected(planner):
+    with pytest.raises(RouteError, match="day"):
+        planner.plan("Rithala", "Hauz Khas", day="holiday-ish")

@@ -47,7 +47,7 @@
   "speed": {
     "queries": 2000,
     "platform_nodes": 271,
-    "original_dijkstra_ms_per_query": 2.037,
+    "original_dijkstra_ms_per_query": 2.049,
     "heap_dijkstra_ms_per_query": 0.052,
     "astar_ms_per_query": 0.077,
     "heap_speedup_over_original": 39.2,
@@ -65,5 +65,46 @@
     "when_different_transfers_saved_mean": 1.15,
     "max_transfers_fastest": 4,
     "pairs_needing_3_or_more_transfers_pct": 7.6
+  },
+  "fares": {
+    "pairs": 29645,
+    "mean_fare_rupees": 52.4,
+    "share_of_pairs_at_each_fare_pct": {
+      "11": 0.9,
+      "21": 3.0,
+      "32": 13.2,
+      "42": 0.1,
+      "43": 26.6,
+      "53": 0.3,
+      "54": 29.2,
+      "64": 20.2,
+      "65": 0.0,
+      "75": 0.5,
+      "76": 0.0,
+      "85": 0.2,
+      "86": 0.6,
+      "96": 0.5,
+      "97": 0.5,
+      "106": 0.1,
+      "107": 1.0,
+      "108": 0.1,
+      "117": 0.4,
+      "118": 0.8,
+      "128": 0.9,
+      "129": 0.2,
+      "139": 0.5,
+      "149": 0.0,
+      "150": 0.1,
+      "160": 0.0
+    },
+    "pairs_where_the_fastest_route_uses_the_airport_express_pct": 7.4,
+    "of_those_with_an_ordinary_route_mean_extra_rupees": 58.4,
+    "of_those_pairs_that_pay_more_than_the_ordinary_fare_pct": 99.7,
+    "fare_unchanged_if_distances_are_off_by": {
+      "-5%": 90.7,
+      "+5%": 91.3,
+      "-10%": 80.9,
+      "+10%": 83.1
+    }
   }
 }
