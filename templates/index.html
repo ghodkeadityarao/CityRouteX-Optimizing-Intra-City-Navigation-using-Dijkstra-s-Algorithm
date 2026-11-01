@@ -1,135 +1,75 @@
-<!DOCTYPE html>
-<html>
-
+<!doctype html>
+<html lang="en">
 <head>
-  <!-- Basic -->
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <!-- Mobile Metas -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <!-- Site Metas -->
-  <meta name="keywords" content="" />
-  <meta name="description" content="" />
-  <meta name="author" content="" />
-  <link rel="shortcut icon" href="{{ url_for('static',filename='images/fevicon.png') }}" type="image/x-icon">
-  <title>Delhi Metro</title>
-
-  <!-- bootstrap core css -->
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/bootstrap.css') }}" />
-
-  <!-- fonts style -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <!--owl slider stylesheet -->
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
-  <!-- nice select -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css" integrity="sha256-mLBIhmBvigTFWPSCtvdu6a76T+3Xyt+K571hupeFLg4=" crossorigin="anonymous" />
-  <!-- font awesome style -->
-  <link href="{{ url_for('static',filename='css/font-awesome.min.css') }}" rel="stylesheet" />
-
-  <!-- Custom styles for this template -->
-  <link href="{{ url_for('static',filename='css/style.css') }}" rel="stylesheet" />
-  <!-- responsive style -->
-  <link href="{{ url_for('static',filename='css/responsive.css') }}" rel="stylesheet" />
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CityRouteX · Delhi Metro routes</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 </head>
-
 <body>
-  <div class="hero_area">
-    <div class="hero_bg_box">
-      <img src="{{ url_for('static',filename='images/del.avif') }}" alt="">
+<main>
+  <h1>CityRouteX</h1>
+  <p class="sub">Fastest or fewest-transfer routes across the Delhi Metro, with the line, stops and transfers for each leg.</p>
+
+  <form class="card" method="get" action="{{ url_for('index') }}">
+    <div><label for="from">From</label><input id="from" name="from" list="stations" value="{{ form.get('from', '') }}" placeholder="e.g. Rithala" autocomplete="off" required></div>
+    <div><label for="to">To</label><input id="to" name="to" list="stations" value="{{ form.get('to', '') }}" placeholder="e.g. Hauz Khas" autocomplete="off" required></div>
+    <div><label for="mode">Route</label>
+      <select id="mode" name="mode">{% for key, label in modes.items() %}<option value="{{ key }}" {{ 'selected' if form.get('mode', 'fastest') == key }}>{{ label }}</option>{% endfor %}</select></div>
+    <button type="submit">Find route</button>
+    <datalist id="stations">{% for s in stations %}<option value="{{ s }}">{% endfor %}</datalist>
+  </form>
+
+  {% if error %}<div class="card error">{{ error }}</div>{% endif %}
+
+  <div class="grid">
+    <div>
+    {% if route %}
+      <div class="card">
+        <div class="totals">
+          <div><b>{{ route.minutes | round | int }} min</b><span>estimated</span></div>
+          <div><b>{{ route.stops }}</b><span>stops</span></div>
+          <div><b>{{ route.transfers }}</b><span>transfer{{ '' if route.transfers == 1 else 's' }}</span></div>
+          <div><b>{{ '%.1f' | format(route.km) }} km</b><span>on the train</span></div>
+        </div>
+        {% for leg in route.legs %}
+        <div class="leg" style="border-color: {{ leg.colour }}">
+          <h3>{{ leg.line }}</h3>
+          <p>{{ leg.stations[0] }} → {{ leg.stations[-1] }} · {{ leg.stops }} stop{{ '' if leg.stops == 1 else 's' }} · {{ leg.minutes | round | int }} min</p>
+          <details><summary>Show stations</summary><p>{{ leg.stations | join(' → ') }}</p></details>
+        </div>
+        {% if not loop.last %}<p class="note">{% if route.legs[loop.index].stations[0] == leg.stations[-1] %}Change at {{ leg.stations[-1] }}{% else %}Walk from {{ leg.stations[-1] }} to {{ route.legs[loop.index].stations[0] }}{% endif %}</p>{% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="card"><p>Pick two stations to see the route. {{ stations | length }} stations on {{ lines | length }} lines are available.</p></div>
+    {% endif %}
     </div>
-    <!-- header section strats -->
-    <header class="header_section">
-      <div class="header_top">
-        <div class="container-fluid header_top_container">
-
-          <div class="contact_nav">
-            <a href="">
-              <i class="fa fa-map-marker" aria-hidden="true"></i>
-              <span>
-                Metro Map
-              </span>
-            </a>
-            <a href="">
-              <i class="fa fa-phone" aria-hidden="true"></i>
-              <span>
-                Price Chart
-              </span>
-            </a>
-            <a href="">
-              <i class="fa fa-envelope" aria-hidden="true"></i>
-              <span>
-                Translate
-              </span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </header>
-    <!-- end header section -->
-
-
-    <!-- slider section -->
-    <section class="slider_section ">
-      <div id="customCarousel1" class="carousel slide" data-ride="carousel">
-        <div class="col-lg-10 col-md-11 mx-auto">
-          <div class="detail-box">
-            <h1>
-              WELCOME TO THE DELHI METRO APP
-            </h1>
-            <br>
-
-            <form action="/" method="POST">
-            <div class="center-box">
-              <input type="search" name="start1" id="start1" class="form-control search-box" placeholder="Enter Start Station..." list="suggestions1" oninput="showResults(this.value, 'suggestions1')" />
-              <datalist id="suggestions1" class="suggestions"></datalist>
-              <br>
-              <input type="search" name="end1" id="end1" class="form-control search-box" placeholder="Enter Final Station..." list="suggestions1" oninput="showResults(this.value, 'suggestions1')" />
-              <datalist id="suggestions1" class="suggestions"></datalist>
-            </div>
-            
-            
-            <div class="btn-box">
-             <button type="submit">Search</button>
-              <!-- <a href="/res" class="btn1" type="submit">
-                Search
-              </a> -->
-            </div>
-          </form>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- end slider section -->
+    <div id="map" role="img" aria-label="Map of the route"></div>
   </div>
-  
-
-  <!-- footer section -->
-  <footer class="footer_section">
-    <div class="container">
-      <p>
-        &copy; <span id="displayYear"></span> All Rights Reserved By
-        <a href="https://html.design/">Bennett University</a>
-      </p>
-    </div>
-  </footer>
-  <!-- footer section -->
-
-  <!-- jQery -->
-  <script src="{{ url_for('static',filename='js/jquery-3.4.1.min.js') }}"></script>
-  <!-- popper js -->
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <!-- bootstrap js -->
-  <script src="{{ url_for('static',filename='js/bootstrap.js') }}"></script>
-  <!-- owl slider -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-  <!-- nice select -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js" integrity="sha256-Zr3vByTlMGQhvMfgkQ5BtWRSKBGa2QlspKYJnkjZTmo=" crossorigin="anonymous"></script>
-  <!-- custom js -->
-  <script src="{{ url_for('static',filename='js/custom.js') }}"></script>
-  <!-- Google Map -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh39n5U-4IoWpsVGUHWdqB6puEkhRLdmI&callback=myMap"></script>
-  <!-- End Google Map -->
+  <p class="note">Times are estimates from station distances with fixed assumptions for speed, stops and transfers, not a timetable. Map data © OpenStreetMap contributors.</p>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+  const drawing = {{ drawing | tojson }};
+  const route = {{ (route.as_dict() if route else None) | tojson }};
+  const map = L.map('map').setView([28.62, 77.2], 10);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 18, attribution: '© OpenStreetMap contributors'}).addTo(map);
+  drawing.forEach(s => L.polyline(s.coords, {color: s.colour, weight: 3, opacity: route ? 0.25 : 0.8}).addTo(map));
+  if (route) {
+    const bounds = [];
+    route.legs.forEach(leg => {
+      L.polyline(leg.coords, {color: leg.colour, weight: 7, opacity: 1}).addTo(map);
+      leg.coords.forEach((c, i) => {
+        bounds.push(c);
+        const end = i === 0 || i === leg.coords.length - 1;
+        L.circleMarker(c, {radius: end ? 6 : 3, color: '#222', weight: 1, fillColor: '#fff', fillOpacity: 1})
+          .bindTooltip(leg.stations[i]).addTo(map);
+      });
+    });
+    map.fitBounds(bounds, {padding: [30, 30]});
+  }
+</script>
 </body>
-
 </html>

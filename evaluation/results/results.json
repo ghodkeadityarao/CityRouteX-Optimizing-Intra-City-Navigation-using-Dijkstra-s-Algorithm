@@ -1,0 +1,69 @@
+{
+  "seed": 0,
+  "assumptions": {
+    "run_kmh": 40.0,
+    "airport_run_kmh": 80.0,
+    "dwell_min": 0.5,
+    "transfer_min": 5.0,
+    "circuity": 1.087,
+    "walk_kmh": 4.5
+  },
+  "data": {
+    "original_stations": 229,
+    "original_stations_unmatched_after_renames": 0,
+    "original_edges": 242,
+    "original_edges_in_the_network_now": 240,
+    "original_edges_not_in_the_network_now": 2,
+    "of_which_skip_a_station_that_is_there_now": 2,
+    "stations_now": 244,
+    "edges_now": 262,
+    "stations_not_in_original": 15,
+    "edges_not_in_original": 22,
+    "original_matrix_asymmetric_pairs": 3,
+    "straight_line_km_between_stations": 344.5
+  },
+  "correctness": {
+    "ordered_pairs_checked": 59292,
+    "dijkstra_mismatches_vs_networkx": 0,
+    "astar_mismatches_vs_networkx": 0
+  },
+  "original_algorithm_on_weighted_edges": {
+    "queries": 500,
+    "wrong_path_pct": 4.6,
+    "never_reached_the_start_pct": 0.0
+  },
+  "original_routes_vs_fastest": {
+    "pairs_compared": 26105,
+    "pairs_that_could_not_be_timed": 0,
+    "pairs_whose_original_route_skips_a_station_pct": 17.6,
+    "original_route_not_the_fastest_pct": 43.2,
+    "mean_extra_minutes_over_all_pairs": 4.7,
+    "mean_extra_minutes_when_slower": 10.88,
+    "p90_extra_minutes": 13.93,
+    "max_extra_minutes": 49.79,
+    "mean_minutes_original": 54.77,
+    "mean_minutes_fastest": 50.07
+  },
+  "speed": {
+    "queries": 2000,
+    "platform_nodes": 271,
+    "original_dijkstra_ms_per_query": 2.037,
+    "heap_dijkstra_ms_per_query": 0.052,
+    "astar_ms_per_query": 0.077,
+    "heap_speedup_over_original": 39.2,
+    "dijkstra_nodes_settled_mean": 138.8,
+    "astar_nodes_settled_mean": 103.8,
+    "astar_fewer_nodes_pct": 25.2
+  },
+  "fastest_vs_fewest_transfers": {
+    "pairs": 29645,
+    "mean_minutes_fastest": 50.38,
+    "mean_transfers_fastest": 1.31,
+    "mean_transfers_fewest": 1.04,
+    "pairs_with_a_different_route_pct": 23.6,
+    "when_different_extra_minutes_mean": 11.55,
+    "when_different_transfers_saved_mean": 1.15,
+    "max_transfers_fastest": 4,
+    "pairs_needing_3_or_more_transfers_pct": 7.6
+  }
+}

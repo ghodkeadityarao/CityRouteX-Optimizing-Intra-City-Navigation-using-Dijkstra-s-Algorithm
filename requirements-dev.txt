@@ -1,0 +1,5 @@
+-r requirements.txt
+pytest>=8.0
+networkx>=3.2
+pandas>=2.1
+matplotlib>=3.8
