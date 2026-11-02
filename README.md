@@ -1,4 +1,4 @@
-# CityRouteX
+# CityRouteX: Optimizing Intra-City Navigation Using Dijkstra's Algorithm
 
 A Delhi Metro route planner. Pick two stations and get the fastest route, or the route with the fewest transfers, broken into legs by line with the stops, the minutes and the transfers, drawn on a map.
 
